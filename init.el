@@ -49,6 +49,9 @@
       (package-refresh-contents)
       (mapc 'package-install packages))))
 
+(add-to-list 'load-path (f-join user-emacs-directory "site-lisp/")
+(require 'my-compile)
+
 (setq initial-scratch-message nil
       inhibit-startup-screen t
       echo-keystrokes 0.1
@@ -181,6 +184,8 @@
 (define-key custom-bindings-map (kbd "C-c a") 'mc/mark-all-like-this)
 (define-key custom-bindings-map (kbd "C-c n") 'mc/mark-next-like-this)
 (define-key custom-bindings-map (kbd "C-x g") 'magit-status)
+
+(define-key c++-mode-map (kbd "C-c c") 'my/compile)
 
 (define-key company-active-map (kbd "M-n") nil)
 (define-key company-active-map (kbd "M-p") nil)
