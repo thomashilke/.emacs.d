@@ -43,13 +43,17 @@
                   string-inflection
                   magit-lfs
                   haskell-mode
-                  undo-tree)))
+                  undo-tree
+                  yasnippet
+                  yasnippet-snippets
+                  yasnippet-classic-snippets)))
   (let ((packages (remove-if 'package-installed-p packages)))
     (when packages
       (package-refresh-contents)
       (mapc 'package-install packages))))
 
-(add-to-list 'load-path (f-join user-emacs-directory "site-lisp/")
+(require 'f)
+(add-to-list 'load-path (f-join user-emacs-directory "site-lisp/"))
 (require 'my-compile)
 
 (setq initial-scratch-message nil
@@ -94,7 +98,8 @@
                 global-undo-tree-mode
                 global-diff-hl-mode
                 smartparens-mode
-                global-hl-line-mode))
+                global-hl-line-mode
+                yas-global-mode))
   (funcall mode 1))
 
 (load-theme 'doom-spacegrey t)
@@ -128,6 +133,7 @@
 (setq ispell-list-command "--list")
 
 (add-hook 'prog-mode-hook 'flycheck-mode)
+(add-hook 'prog-mode-hook 'delete-trailing-whitespace)
 
 (setq projectile-completion-system 'ivy)
 
@@ -146,6 +152,16 @@
 
 (eval-after-load 'company
   '(add-to-list 'company-backend 'company-omnisharp))
+
+(defvar my-c++-style
+  '("gnu"
+    (c-offsets-alist
+     (arglist-intro . +)
+     (access-label . /)
+     (brace-list-intro . +))))
+
+(c-add-style "my-c++-style" my-c++-style)
+
 
 (defvar custom-bindings-map (make-keymap)
   "A keymap for custom bindings.")
@@ -185,7 +201,9 @@
 (define-key custom-bindings-map (kbd "C-c n") 'mc/mark-next-like-this)
 (define-key custom-bindings-map (kbd "C-x g") 'magit-status)
 
+(require 'cc-mode)
 (define-key c++-mode-map (kbd "C-c c") 'my/compile)
+(define-key c++-mode-map (kbd "C-c T") 'toggle-test-implementation)
 
 (define-key company-active-map (kbd "M-n") nil)
 (define-key company-active-map (kbd "M-p") nil)
@@ -205,4 +223,3 @@
   t nil custom-bindings-map)
 
 (custom-bindings-mode t)
-  
