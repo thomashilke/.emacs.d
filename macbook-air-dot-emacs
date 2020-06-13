@@ -1,0 +1,47 @@
+
+
+;; Convert accents escape sequences to unicode chars on save buffer
+(add-hook 'latex-mode-hook
+          (lambda ()
+            (add-hook 'write-contents-functions
+                      (lambda ()
+                        (save-excursion
+                          (delete-trailing-whitespace)
+                          (iso-tex2iso (point-min) (point-max)))
+                        nil))))
+
+;; Compile shortcut and auto-fill-mode by default in latex-mode
+(add-hook 'latex-mode-hook
+          (lambda()
+            (setq ispell-dictionary "french")
+            (flyspell-mode)
+            (local-set-key (kbd "C-c c") 'compile)
+            (local-set-key (kbd "C-c C-c") 'flyspell-auto-correct-previous-word)
+            (auto-fill-mode)))
+
+;;; Deactivate Ctrl-z when in graphic mode
+(when (display-graphic-p)
+  (global-unset-key (kbd "C-z")))
+
+;;; Open latex file with latex-mode
+(add-to-list 'auto-mode-alist '("\\.tex$" . latex-mode))
+
+(unless window-system
+  (require 'mouse)
+  (xterm-mouse-mode t)
+  (setq mouse-sel-mode t))
+
+;;; Use the tabularx env to export tables to latex with org-mode
+(setq org-latex-packages-alist
+      '("\\usepackage[utf8]{inputenc}"
+        "\\usepackage[T1]{fontenc}"
+        "\\usepackage{lmodern}"
+        "\\usepackage{amsmath,amsfonts}"
+        "\\usepackage[top=1cm,left=1cm,right=1cm,bottom=1cm]{geometry}"
+        "\\usepackage{ltablex}"
+        "\\pagenumbering{gobble}"))
+(setq org-latex-default-table-environment "tabularx")
+(setq org-latex-default-table-mode "table")
+
+
+
