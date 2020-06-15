@@ -21,7 +21,6 @@
 (let ((package-buildins nil)
       (packages '(f
                   company
-                  doom-themes
                   magit
                   multiple-cursors
                   projectile
@@ -62,7 +61,7 @@
       ring-bell-function 'quiet
       custom-file (make-temp-file ""))
 
-(fringe-mode 32)
+(fringe-mode 8)
 
 (setq
       compilation-auto-jump-to-first-error t
@@ -99,13 +98,12 @@
                 global-diff-hl-mode
                 smartparens-mode
                 global-hl-line-mode
-                yas-global-mode))
+                yas-global-mode
+                semantic-mode))
   (funcall mode 1))
 
-(load-theme 'doom-spacegrey t)
-
-(cond ((member "Fira Code" (font-family-list))
-       (set-face-attribute 'default nil :font "Fira Code Retina-13")))
+(cond ((member "Source Code Pro" (font-family-list))
+       (set-face-attribute 'default nil :font "Source Code Pro-11")))
 
 (require 'f)
 (defvar emacs-autosave-directory
