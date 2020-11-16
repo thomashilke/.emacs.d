@@ -8,7 +8,7 @@
 (setq scroll-step 1
       mouse-wheel-scroll-amount '(2 ((shift) 3)))
 
-(fset 'yes-or-no-p 'y-or-no-p)
+(fset 'yes-or-no-p 'y-or-n-p)
 (setq-default tab-always-indent 'complete)
 
 (dolist (mode '(scroll-bar-mode menu-bar-mode tool-bar-mode))
@@ -95,5 +95,59 @@
 	  (lambda ()
 	    (add-to-list 'eglot-server-programs '(c++-mode . ("clangd")))
 	    (eglot-ensure)
-	    (flycheck-mode 1)
+	    (flymake-mode 1)
 	    (setq flycheck-clang-language-standard "c++17")))
+
+(require 'cc-mode)
+(define-key c++-mode-map (kbd "C-c c") #'compile)
+
+(require 'flymake)
+(define-key c++-mode-map (kbd "C-c ! n") #'flymake-goto-next-error)
+(define-key c++-mode-map (kbd "C-c ! p") #'flymake-goto-prev-error)
+(define-key c++-mode-map (kbd "C-c ! l") #'flymake-show-diagnostics-buffer)
+
+
+(defun toggle-window-split ()
+  ""
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+	     (next-win-buffer (window-buffer (next-window)))
+	     (this-win-edges (window-edges (selected-window)))
+	     (next-win-edges (window-edges (next-window)))
+	     (this-win-2nd (not (and (<= (car this-win-edges)
+					 (car next-win-edges))
+				     (<= (cadr this-win-edges)
+					 (cadr next-win-edges)))))
+	     (splitter
+	      (if (= (car this-win-edges)
+		     (car (window-edges (next-window))))
+		  'split-window-horizontally
+		'split-window-vertically)))
+	(delete-other-windows)
+	(let ((first-win (selected-window)))
+	  (funcall splitter)
+	  (if this-win-2nd (other-window 1))
+	  (set-window-buffer (selected-window) this-win-buffer)
+	  (set-window-buffer (next-window) next-win-buffer)
+	  (select-window first-win)
+
+
+	  ((if this-win-2nd (other-window 1)))))))
+
+(global-set-key (kbd "C-x +") #'toggle-window-split)
+
+
+;;; configure backups files
+(require 'f)
+(defvar emacs-autosave-directory
+  (f-join user-emacs-directory "autosaves/")
+  "")
+
+(setq backup-directory-alist (list (cons ".*" emacs-autosave-directory))
+      backup-by-copying t    ; Don't delink hardlinks
+      version-control t      ; Use version numbers on backups
+      delete-old-versions t  ; Automatically delete excess backups
+      kept-new-versions 20   ; how many of the newest versions to keep
+      kept-old-versions 5    ; and how many of the old
+      )
