@@ -1,12 +1,20 @@
 (package-initialize)
 
 (require 'package)
-(setq package-archives '(("melpa" . "http://melpa.org/packages/") ("elpa" . "http://elpa.gnu.org/packages/")))
-(setq required-packages-list '(company flycheck eglot magit projectile amx ivy counsel which-key yasnippet multiple-cursors ace-window delight))
+(setq package-archives '(("melpa" . "http://melpa.org/packages/")
+			 ("elpa" . "http://elpa.gnu.org/packages/")))
 
-(setq inhibit-startup-screen t)
-(setq scroll-step 1
+(setq required-packages-list '(company flycheck eglot magit projectile amx ivy counsel which-key yasnippet multiple-cursors ace-window delight fsharp-mode))
+
+(dolist (package required-packages-list)
+  (when (not (package-installed-p package))
+    (package-install package)))
+
+(setq inhibit-startup-screen t
+      scroll-step 1
       mouse-wheel-scroll-amount '(2 ((shift) 3)))
+
+(setq custom-file (make-temp-file ""))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq-default tab-always-indent 'complete)
@@ -106,9 +114,13 @@
 (define-key c++-mode-map (kbd "C-c ! p") #'flymake-goto-prev-error)
 (define-key c++-mode-map (kbd "C-c ! l") #'flymake-show-diagnostics-buffer)
 
+(require 'fsharp-mode)
+(require 'eglot-fsharp)
+(add-hook 'fsharp-mode-hook #'eglot-ensure)
+(setq inferior-fsharp-program "/usr/bin/fsharpi --readline-")
 
+;;; toggling between horizontal and vertical windows split
 (defun toggle-window-split ()
-  ""
   (interactive)
   (if (= (count-windows) 2)
       (let* ((this-win-buffer (window-buffer))
@@ -131,8 +143,6 @@
 	  (set-window-buffer (selected-window) this-win-buffer)
 	  (set-window-buffer (next-window) next-win-buffer)
 	  (select-window first-win)
-
-
 	  ((if this-win-2nd (other-window 1)))))))
 
 (global-set-key (kbd "C-x +") #'toggle-window-split)
@@ -151,3 +161,4 @@
       kept-new-versions 20   ; how many of the newest versions to keep
       kept-old-versions 5    ; and how many of the old
       )
+
